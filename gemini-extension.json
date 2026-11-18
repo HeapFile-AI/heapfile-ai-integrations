@@ -1,0 +1,21 @@
+{
+  "name": "heapfile-gemini-public",
+  "version": "1.0.0",
+  "description": "Connect Gemini CLI to HeapFile's remote work-memory service.",
+  "mcpServers": {
+    "heapfile": {
+      "url": "https://mcp.heapfile.ai/mcp",
+      "type": "http",
+      "oauth": {
+        "enabled": true,
+        "clientId": "lah6li0gp0ibodt1ffeckf1v4",
+        "scopes": [
+          "openid",
+          "https://mcp.heapfile.ai/mcp/brain.read",
+          "https://mcp.heapfile.ai/mcp/brain.write"
+        ],
+        "redirectUri": "http://localhost:8788/callback"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.heapfile-ai/heapfile-memory",
+  "title": "HeapFile",
+  "description": "Remote MCP service for evidence-backed work memory and continuity.",
+  "version": "1.0.0",
+  "websiteUrl": "https://heapfile.ai",
+  "repository": {
+    "url": "https://github.com/HeapFile-AI/heapfile-ai-integrations",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.heapfile.ai/mcp"
+    }
+  ]
+}
