@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "heapfile": {
+      "url": "https://mcp.heapfile.ai/mcp",
+      "auth": {
+        "CLIENT_ID": "5dmdi4vtvu567qc022crsc5g92",
+        "scopes": [
+          "openid",
+          "https://mcp.heapfile.ai/mcp/brain.read",
+          "https://mcp.heapfile.ai/mcp/brain.write"
+        ]
+      }
+    }
+  }
+}
