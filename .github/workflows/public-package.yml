@@ -1,0 +1,72 @@
+name: Validate public integration package
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-package-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: validate public package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Enforce the provider-thin public boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git ls-files | grep -Ev '^(\.cursor-plugin/plugin\.json|\.github/workflows/public-package\.yml|GEMINI\.md|LICENSE|README\.md|assets/heapfile\.png|gemini-extension\.json|mcp\.json|server\.json)$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "::error::Unexpected public package path(s); private runtime/source is not admitted."
+            printf '%s\n' "$unexpected"
+            exit 1
+          fi
+      - name: Validate manifests and public-client contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = [
+              Path(".cursor-plugin/plugin.json"),
+              Path("gemini-extension.json"),
+              Path("mcp.json"),
+              Path("server.json"),
+          ]
+          documents = {str(path): json.loads(path.read_text(encoding="utf-8")) for path in files}
+
+          forbidden_keys = {"client_secret", "password", "private_key", "token"}
+          def walk(value, location):
+              if isinstance(value, dict):
+                  for key, child in value.items():
+                      if key.lower() in forbidden_keys:
+                          raise SystemExit(f"forbidden credential field in {location}: {key}")
+                      walk(child, f"{location}.{key}")
+              elif isinstance(value, list):
+                  for index, child in enumerate(value):
+                      walk(child, f"{location}[{index}]")
+
+          for name, document in documents.items():
+              walk(document, name)
+
+          endpoint = "https://mcp.heapfile.ai/mcp"
+          if documents["mcp.json"]["mcpServers"]["heapfile"]["url"] != endpoint:
+              raise SystemExit("mcp.json endpoint drifted")
+          if documents["gemini-extension.json"]["mcpServers"]["heapfile"]["url"] != endpoint:
+              raise SystemExit("gemini-extension.json endpoint drifted")
+          if documents["server.json"]["remotes"] != [{"type": "streamable-http", "url": endpoint}]:
+              raise SystemExit("server.json endpoint drifted")
+          if documents[".cursor-plugin/plugin.json"]["mcpServers"] != "./mcp.json":
+              raise SystemExit("Cursor manifest no longer references the reviewed MCP manifest")
+          print("public package boundary and manifests passed")
+          PY
