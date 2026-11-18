@@ -14,7 +14,7 @@
           "https://mcp.heapfile.ai/mcp/brain.read",
           "https://mcp.heapfile.ai/mcp/brain.write"
         ],
-        "redirectUri": "http://localhost:8788/callback"
+        "redirectUri": "http://localhost:8788/oauth/callback"
       }
     }
   }

@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.heapfile-ai/heapfile-memory",
+  "name": "io.github.HeapFile-AI/heapfile-memory",
   "title": "HeapFile",
   "description": "Remote MCP service for evidence-backed work memory and continuity.",
   "version": "1.0.0",
